@@ -967,6 +967,34 @@
                 display: none
             }
         }
+
+        .cat {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 700
+        }
+
+        .cat-Aset { background: #e8f5ed; color: #28764e }
+        .cat-Kewajiban { background: #fff0ed; color: var(--red) }
+        .cat-Ekuitas { background: #f2eaff; color: #8a65bb }
+        .cat-Pendapatan { background: #eaf2ff; color: var(--blue) }
+        .cat-Beban { background: #fff3df; color: var(--orange) }
+
+        .btn-sm {
+            border: 1px solid var(--line);
+            background: white;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink)
+        }
+
+        .btn-sm:hover { border-color: #b6d6c4 }
+        .btn-sm.danger { color: var(--red) }
+        .btn-sm.danger:hover { border-color: #e8c3bc; background: #fff7f5 }
     </style>
 </head>
 
@@ -1278,6 +1306,12 @@
                     </div>
                 </section>
                 <section class="page" id="page-services">
+                    <div class="heading">
+                        <div>
+                            <h1>Data Layanan</h1>
+                            <p class="sub">Daftar layanan laundry dan harga dari tabel <b>services</b>.</p>
+                        </div>
+                    </div>
                     <div class="panel">
                         <div class="table-wrap">
                             <table>
@@ -1298,6 +1332,7 @@
                             </table>
                         </div>
                     </div>
+                    </section>
                     <section class="page" id="page-payments">
                         <div class="heading">
                             <div>
@@ -1312,20 +1347,69 @@
                         </div>
                     </section>
                     <section class="page" id="page-coa">
-
                         <div class="heading">
                             <div>
                                 <h1>Chart of Accounts</h1>
-                                <p class="sub">Manage FreshFold financial accounts.</p>
+                                <p class="sub">Kelola daftar akun keuangan FreshFold dari tabel <b>coa</b>.</p>
                             </div>
+                            <button class="primary" onclick="showCoaForm()">＋ Tambah Akun</button>
+                        </div>
 
-                            <button class="primary" onclick="showCoaForm()">
-                                + Add Account
-                            </button>
+                        <div class="stats" id="coaStats">
+                            <div class="stat"><div class="stat-top">Total Akun</div><div class="stat-value" id="coaTotal">0</div><div class="stat-note">Seluruh akun tercatat</div></div>
+                            <div class="stat"><div class="stat-top">Aset</div><div class="stat-value" id="coaAset">0</div><div class="stat-note">Saldo normal Debit</div></div>
+                            <div class="stat"><div class="stat-top">Kewajiban &amp; Ekuitas</div><div class="stat-value" id="coaKewEk">0</div><div class="stat-note">Saldo normal Kredit</div></div>
+                            <div class="stat"><div class="stat-top">Pendapatan &amp; Beban</div><div class="stat-value" id="coaPenBeb">0</div><div class="stat-note">Akun laba rugi</div></div>
+                        </div>
+
+                        <div class="panel form-panel" id="coaForm" style="display:none;margin-bottom:18px">
+                            <h3 class="form-title" id="coaFormTitle">Tambah Akun</h3>
+                            <input type="hidden" id="oldCoaCode">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="coaCode">Kode Akun *</label>
+                                    <input class="field" type="text" id="coaCode" maxlength="20" placeholder="Contoh: 1-1100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="coaName">Nama Akun *</label>
+                                    <input class="field" type="text" id="coaName" maxlength="100" placeholder="Contoh: Kas">
+                                </div>
+                                <div class="form-group">
+                                    <label for="coaCategory">Kategori *</label>
+                                    <select class="select" id="coaCategory">
+                                        <option value="Aset">Aset</option>
+                                        <option value="Kewajiban">Kewajiban</option>
+                                        <option value="Ekuitas">Ekuitas</option>
+                                        <option value="Pendapatan">Pendapatan</option>
+                                        <option value="Beban">Beban</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="coaBalance">Saldo Normal *</label>
+                                    <select class="select" id="coaBalance">
+                                        <option value="Debit">Debit</option>
+                                        <option value="Kredit">Kredit</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="secondary" onclick="hideCoaForm()">Batal</button>
+                                <button type="button" class="primary" onclick="saveCoa()">Simpan Akun</button>
+                            </div>
                         </div>
 
                         <div class="panel">
-
+                            <div class="filters">
+                                <input class="field search" id="coaSearch" placeholder="⌕ Cari kode atau nama akun...">
+                                <select class="select filter-select" id="coaFilter">
+                                    <option value="all">Semua Kategori</option>
+                                    <option>Aset</option>
+                                    <option>Kewajiban</option>
+                                    <option>Ekuitas</option>
+                                    <option>Pendapatan</option>
+                                    <option>Beban</option>
+                                </select>
+                            </div>
                             <div class="table-wrap">
                                 <table>
                                     <thead>
@@ -1334,62 +1418,15 @@
                                             <th>NAMA AKUN</th>
                                             <th>KATEGORI</th>
                                             <th>SALDO NORMAL</th>
-                                            <th>ACTION</th>
+                                            <th>AKSI</th>
                                         </tr>
                                     </thead>
-
                                     <tbody id="coaTable">
-                                        <tr>
-                                            <td colspan="5" class="empty">
-                                                Memuat data COA...
-                                            </td>
-                                        </tr>
+                                        <tr><td colspan="5" class="empty">Memuat data COA...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
-
                         </div>
-
-                        <div class="panel" id="coaForm"
-                            style="display:none; margin-top:20px;">
-
-                            <h3 id="coaFormTitle">Add Account</h3>
-
-                            <input type="hidden" id="oldCoaCode">
-
-                            <label>Kode Akun</label>
-                            <input type="text" id="coaCode" placeholder="Contoh: 1-1100">
-
-                            <label>Nama Akun</label>
-                            <input type="text" id="coaName" placeholder="Contoh: Kas">
-
-                            <label>Kategori</label>
-                            <select id="coaCategory">
-                                <option value="Aset">Aset</option>
-                                <option value="Kewajiban">Kewajiban</option>
-                                <option value="Ekuitas">Ekuitas</option>
-                                <option value="Pendapatan">Pendapatan</option>
-                                <option value="Beban">Beban</option>
-                            </select>
-
-                            <label>Saldo Normal</label>
-                            <select id="coaBalance">
-                                <option value="Debit">Debit</option>
-                                <option value="Kredit">Kredit</option>
-                            </select>
-
-                            <br><br>
-
-                            <button class="primary" onclick="saveCoa()">
-                                Save Account
-                            </button>
-
-                            <button class="secondary" onclick="hideCoaForm()">
-                                Cancel
-                            </button>
-
-                        </div>
-
                     </section>
                     <section class="page" id="page-admins">
                         <div class="heading">
@@ -1746,64 +1783,132 @@
         loadDatabaseData();
 
 
+        let coaData = [];
+
         async function loadCoa() {
             try {
                 const response = await fetch('api.php?action=get_coa');
                 const data = await response.json();
-
                 if (data.success) {
-                    renderCoa(data.coa);
+                    coaData = data.coa || [];
+                    renderCoa();
                 } else {
-                    alert(data.message);
+                    toast(data.message || 'Gagal memuat data COA');
                 }
             } catch (error) {
                 console.error(error);
-                alert('Gagal mengambil data COA');
+                document.getElementById('coaTable').innerHTML = '<tr><td colspan="5" class="empty">Gagal mengambil data COA dari server.</td></tr>';
             }
         }
 
-        function escapeCoa(value) {
-            return String(value ?? '').replace(/[&<>"']/g, char => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            })[char]);
-        }
-
-        function renderCoa(accounts) {
+        function renderCoa() {
             const table = document.getElementById('coaTable');
+            const q = (document.getElementById('coaSearch').value || '').toLowerCase();
+            const f = document.getElementById('coaFilter').value;
 
-            if (!table) {
-                console.error('Elemen coaTable tidak ditemukan');
+            document.getElementById('coaTotal').textContent = coaData.length;
+            document.getElementById('coaAset').textContent = coaData.filter(a => a.kategori === 'Aset').length;
+            document.getElementById('coaKewEk').textContent = coaData.filter(a => ['Kewajiban', 'Ekuitas'].includes(a.kategori)).length;
+            document.getElementById('coaPenBeb').textContent = coaData.filter(a => ['Pendapatan', 'Beban'].includes(a.kategori)).length;
+
+            const list = coaData.filter(a =>
+                (String(a.kode_akun).toLowerCase().includes(q) || String(a.nama_akun).toLowerCase().includes(q)) &&
+                (f === 'all' || a.kategori === f)
+            );
+
+            table.innerHTML = list.length ? list.map(a => `
+                <tr>
+                    <td><span class="order-id">${esc(a.kode_akun)}</span></td>
+                    <td><div class="customer">${esc(a.nama_akun)}</div></td>
+                    <td><span class="cat cat-${esc(a.kategori)}">${esc(a.kategori)}</span></td>
+                    <td>${esc(a.saldo_normal)}</td>
+                    <td>
+                        <button class="btn-sm" onclick="editCoa(decodeURIComponent('${encodeURIComponent(a.kode_akun)}'))">Edit</button>
+                        <button class="btn-sm danger" onclick="deleteCoa(decodeURIComponent('${encodeURIComponent(a.kode_akun)}'))">Hapus</button>
+                    </td>
+                </tr>`).join('') : '<tr><td colspan="5" class="empty">Akun tidak ditemukan.</td></tr>';
+        }
+
+        document.getElementById('coaSearch').addEventListener('input', renderCoa);
+        document.getElementById('coaFilter').addEventListener('change', renderCoa);
+
+        // Saldo normal otomatis mengikuti kategori
+        document.getElementById('coaCategory').addEventListener('change', e => {
+            document.getElementById('coaBalance').value = ['Aset', 'Beban'].includes(e.target.value) ? 'Debit' : 'Kredit';
+        });
+
+        function showCoaForm(account = null) {
+            document.getElementById('coaForm').style.display = 'block';
+            document.getElementById('coaFormTitle').textContent = account ? 'Edit Akun' : 'Tambah Akun';
+            document.getElementById('oldCoaCode').value = account ? account.kode_akun : '';
+            document.getElementById('coaCode').value = account ? account.kode_akun : '';
+            document.getElementById('coaName').value = account ? account.nama_akun : '';
+            document.getElementById('coaCategory').value = account ? account.kategori : 'Aset';
+            document.getElementById('coaBalance').value = account ? account.saldo_normal : 'Debit';
+            document.getElementById('coaCode').focus();
+            document.getElementById('coaForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideCoaForm() {
+            document.getElementById('coaForm').style.display = 'none';
+            document.getElementById('oldCoaCode').value = '';
+        }
+
+        function editCoa(code) {
+            const account = coaData.find(a => String(a.kode_akun) === String(code));
+            if (account) showCoaForm(account);
+        }
+
+        async function saveCoa() {
+            const oldCode = document.getElementById('oldCoaCode').value;
+            const code = document.getElementById('coaCode').value.trim();
+            const name = document.getElementById('coaName').value.trim();
+
+            if (!code || !name) {
+                toast('Kode akun dan nama akun wajib diisi');
                 return;
             }
 
-            if (!accounts.length) {
-                table.innerHTML = `
-            <tr>
-                <td colspan="5">Belum ada akun COA</td>
-            </tr>`;
-                return;
-            }
+            const body = new URLSearchParams();
+            body.append('kode_akun', code);
+            body.append('nama_akun', name);
+            body.append('kategori', document.getElementById('coaCategory').value);
+            body.append('saldo_normal', document.getElementById('coaBalance').value);
+            if (oldCode) body.append('old_kode_akun', oldCode);
 
-            table.innerHTML = accounts.map(account => `
-        <tr>
-            <td>${escapeCoa(account.kode_akun)}</td>
-            <td>${escapeCoa(account.nama_akun)}</td>
-            <td>${escapeCoa(account.kategori)}</td>
-            <td>${escapeCoa(account.saldo_normal)}</td>
-            <td>
-                <button onclick="editCoa(decodeURIComponent('${encodeURIComponent(account.kode_akun)}'))">
-                    Edit
-                </button>
-                <button onclick="deleteCoa(decodeURIComponent('${encodeURIComponent(account.kode_akun)}'))">
-                    Hapus
-                </button>
-            </td>
-        </tr>
-    `).join('');
+            try {
+                const response = await fetch('api.php?action=' + (oldCode ? 'update_coa' : 'add_coa'), {
+                    method: 'POST',
+                    body
+                });
+                const result = await response.json();
+                toast(result.message || (result.success ? 'Berhasil disimpan' : 'Gagal menyimpan'));
+                if (result.success) {
+                    hideCoaForm();
+                    await loadCoa();
+                }
+            } catch (err) {
+                toast('Gagal terhubung ke server');
+            }
+        }
+
+        async function deleteCoa(code) {
+            if (!confirm('Hapus akun ' + code + '?')) return;
+
+            const body = new URLSearchParams();
+            body.append('kode_akun', code);
+
+            try {
+                const response = await fetch('api.php?action=delete_coa', {
+                    method: 'POST',
+                    body
+                });
+                const result = await response.json();
+                toast(result.message || (result.success ? 'Akun dihapus' : 'Gagal menghapus'));
+                if (result.success) await loadCoa();
+            } catch (err) {
+                toast('Gagal terhubung ke server');
+            }
         }
     </script>
 </body>

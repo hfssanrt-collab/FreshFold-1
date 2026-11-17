@@ -127,3 +127,90 @@ if ($action === 'get_coa') {
     }
     exit;
 }
+if ($action === 'add_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $kode  = trim($_POST['kode_akun'] ?? '');
+    $nama  = trim($_POST['nama_akun'] ?? '');
+    $kat   = $_POST['kategori'] ?? '';
+    $saldo = $_POST['saldo_normal'] ?? '';
+
+    if ($kode === '' || $nama === '') {
+        echo json_encode(['success' => false, 'message' => 'Kode dan nama akun wajib diisi']);
+        exit;
+    }
+    if (!in_array($kat, ['Aset', 'Kewajiban', 'Ekuitas', 'Pendapatan', 'Beban'], true) ||
+        !in_array($saldo, ['Debit', 'Kredit'], true)) {
+        echo json_encode(['success' => false, 'message' => 'Kategori atau saldo normal tidak valid']);
+        exit;
+    }
+
+    try {
+        $cek = $pdo->prepare("SELECT COUNT(*) FROM coa WHERE kode_akun = ?");
+        $cek->execute([$kode]);
+        if ($cek->fetchColumn() > 0) {
+            echo json_encode(['success' => false, 'message' => "Kode akun $kode sudah dipakai"]);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO coa (kode_akun, nama_akun, kategori, saldo_normal) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$kode, $nama, $kat, $saldo]);
+        echo json_encode(['success' => true, 'message' => "Akun $kode berhasil ditambahkan!"]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'update_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $old   = trim($_POST['old_kode_akun'] ?? '');
+    $kode  = trim($_POST['kode_akun'] ?? '');
+    $nama  = trim($_POST['nama_akun'] ?? '');
+    $kat   = $_POST['kategori'] ?? '';
+    $saldo = $_POST['saldo_normal'] ?? '';
+
+    if ($old === '' || $kode === '' || $nama === '') {
+        echo json_encode(['success' => false, 'message' => 'Kode dan nama akun wajib diisi']);
+        exit;
+    }
+    if (!in_array($kat, ['Aset', 'Kewajiban', 'Ekuitas', 'Pendapatan', 'Beban'], true) ||
+        !in_array($saldo, ['Debit', 'Kredit'], true)) {
+        echo json_encode(['success' => false, 'message' => 'Kategori atau saldo normal tidak valid']);
+        exit;
+    }
+
+    try {
+        // Jika kode diubah, pastikan tidak bentrok dengan akun lain
+        if ($kode !== $old) {
+            $cek = $pdo->prepare("SELECT COUNT(*) FROM coa WHERE kode_akun = ?");
+            $cek->execute([$kode]);
+            if ($cek->fetchColumn() > 0) {
+                echo json_encode(['success' => false, 'message' => "Kode akun $kode sudah dipakai"]);
+                exit;
+            }
+        }
+
+        $stmt = $pdo->prepare("UPDATE coa SET kode_akun = ?, nama_akun = ?, kategori = ?, saldo_normal = ? WHERE kode_akun = ?");
+        $stmt->execute([$kode, $nama, $kat, $saldo, $old]);
+        echo json_encode(['success' => true, 'message' => "Akun $kode berhasil diperbarui!"]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'delete_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $kode = trim($_POST['kode_akun'] ?? '');
+
+    if ($kode === '') {
+        echo json_encode(['success' => false, 'message' => 'Kode akun tidak valid']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("DELETE FROM coa WHERE kode_akun = ?");
+        $stmt->execute([$kode]);
+        echo json_encode(['success' => true, 'message' => "Akun $kode berhasil dihapus!"]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Akun tidak bisa dihapus: ' . $e->getMessage()]);
+    }
+    exit;
+}
