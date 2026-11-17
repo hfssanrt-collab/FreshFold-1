@@ -988,7 +988,11 @@
                     data-page="customers"><span>♙</span>Pelanggan</button><button class="nav-btn"
                     data-page="employees"><span>♧</span>Karyawan</button><button class="nav-btn"
                     data-page="services"><span>✧</span>Layanan</button><button class="nav-btn"
-                    data-page="payments"><span>▣</span>Pembayaran</button></nav>
+                    data-page="payments"><span>▣</span>Pembayaran</button>
+                <button class="nav-btn" data-page="coa">
+                    <span>▤</span>COA
+                </button>
+            </nav>
             <div class="nav-label" style="margin-top:25px">LAINNYA</div>
             <nav class="nav"><button class="nav-btn" data-page="admins"><span>♙</span>Data Admin</button><button
                     class="nav-btn" data-page="tracking"><span>⌕</span>Cek Status Laundry</button><button
@@ -1236,7 +1240,9 @@
                                     </tr>
                                 </thead>
                                 <tbody id="customerTable">
-                                    <tr><td colspan="5" class="empty">Memuat data pelanggan...</td></tr>
+                                    <tr>
+                                        <td colspan="5" class="empty">Memuat data pelanggan...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1263,7 +1269,9 @@
                                     </tr>
                                 </thead>
                                 <tbody id="employeeTable">
-                                    <tr><td colspan="6" class="empty">Memuat data karyawan...</td></tr>
+                                    <tr>
+                                        <td colspan="6" class="empty">Memuat data karyawan...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1271,116 +1279,208 @@
                 </section>
                 <section class="page" id="page-services">
                     <div class="panel">
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>NAMA LAYANAN</th>
-                    <th>HARGA</th>
-                    <th>SATUAN</th>
-                    <th>KETERANGAN</th>
-                </tr>
-            </thead>
-            <tbody id="serviceTable">
-                <tr><td colspan="5" class="empty">Memuat data layanan...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-                <section class="page" id="page-payments">
-                    <div class="heading">
-                        <div>
-                            <h1>Data Pembayaran</h1>
-                            <p class="sub">Menu untuk memantau data dari tabel <b>payments</b>.</p>
-                        </div>
-                    </div>
-                    <div class="panel">
-                        <div class="empty">▣<br><b style="color:var(--ink)">Menu Pembayaran</b>
-                            <p>Bagian ini disiapkan untuk melihat pembayaran dan mengelola status transaksi.</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="page" id="page-admins">
-                    <div class="heading">
-                        <div>
-                            <h1>Data Admin</h1>
-                            <p class="sub">Menu untuk mengelola akun dari tabel <b>admins</b>.</p>
-                        </div>
-                    </div>
-                    <div class="panel">
-                        <div class="empty">♙<br><b style="color:var(--ink)">Manajemen Admin</b>
-                            <p>Bagian ini disiapkan untuk pengelolaan akun admin FreshFold.</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="page" id="page-reports">
-                    <div class="heading">
-                        <div>
-                            <h1>Laporan Ringkas</h1>
-                            <p class="sub">Ringkasan transaksi dan pembayaran laundry.</p>
-                        </div><button class="secondary" onclick="exportCSV()">↓ Unduh CSV</button>
-                    </div>
-                    <div class="stats">
-                        <div class="stat">
-                            <div class="stat-top">Total Transaksi</div>
-                            <div class="stat-value" id="reportOrders">0</div>
-                            <div class="stat-note">Semua pesanan</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-top">Pendapatan Dibayar</div>
-                            <div class="stat-value" id="reportPaid">Rp0</div>
-                            <div class="stat-note">Pembayaran terkonfirmasi</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-top">Belum Dibayar</div>
-                            <div class="stat-value" id="reportUnpaid">Rp0</div>
-                            <div class="stat-note">Menunggu pembayaran</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-top">Berat Laundry</div>
-                            <div class="stat-value" id="reportWeight">0 kg</div>
-                            <div class="stat-note">Total pakaian tercatat</div>
-                        </div>
-                    </div>
-                    <div class="panel">
-                        <div class="panel-head">
-                            <div>
-                                <h3 class="panel-title">Rincian Seluruh Pesanan</h3>
-                                <div class="panel-sub">Data transaksi terkini dari database</div>
-                            </div>
-                        </div>
                         <div class="table-wrap">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>NO. PESANAN</th>
-                                        <th>PELANGGAN</th>
-                                        <th>TANGGAL MASUK</th>
-                                        <th>LAYANAN</th>
-                                        <th>BERAT</th>
-                                        <th>TOTAL</th>
-                                        <th>PEMBAYARAN</th>
+                                        <th>ID</th>
+                                        <th>NAMA LAYANAN</th>
+                                        <th>HARGA</th>
+                                        <th>SATUAN</th>
+                                        <th>KETERANGAN</th>
                                     </tr>
                                 </thead>
-                                <tbody id="reportTable"></tbody>
+                                <tbody id="serviceTable">
+                                    <tr>
+                                        <td colspan="5" class="empty">Memuat data layanan...</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
-                </section>
+                    <section class="page" id="page-payments">
+                        <div class="heading">
+                            <div>
+                                <h1>Data Pembayaran</h1>
+                                <p class="sub">Menu untuk memantau data dari tabel <b>payments</b>.</p>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="empty">▣<br><b style="color:var(--ink)">Menu Pembayaran</b>
+                                <p>Bagian ini disiapkan untuk melihat pembayaran dan mengelola status transaksi.</p>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="page" id="page-coa">
+
+                        <div class="heading">
+                            <div>
+                                <h1>Chart of Accounts</h1>
+                                <p class="sub">Manage FreshFold financial accounts.</p>
+                            </div>
+
+                            <button class="primary" onclick="showCoaForm()">
+                                + Add Account
+                            </button>
+                        </div>
+
+                        <div class="panel">
+
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>KODE AKUN</th>
+                                            <th>NAMA AKUN</th>
+                                            <th>KATEGORI</th>
+                                            <th>SALDO NORMAL</th>
+                                            <th>ACTION</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="coaTable">
+                                        <tr>
+                                            <td colspan="5" class="empty">
+                                                Memuat data COA...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <div class="panel" id="coaForm"
+                            style="display:none; margin-top:20px;">
+
+                            <h3 id="coaFormTitle">Add Account</h3>
+
+                            <input type="hidden" id="oldCoaCode">
+
+                            <label>Kode Akun</label>
+                            <input type="text" id="coaCode" placeholder="Contoh: 1-1100">
+
+                            <label>Nama Akun</label>
+                            <input type="text" id="coaName" placeholder="Contoh: Kas">
+
+                            <label>Kategori</label>
+                            <select id="coaCategory">
+                                <option value="Aset">Aset</option>
+                                <option value="Kewajiban">Kewajiban</option>
+                                <option value="Ekuitas">Ekuitas</option>
+                                <option value="Pendapatan">Pendapatan</option>
+                                <option value="Beban">Beban</option>
+                            </select>
+
+                            <label>Saldo Normal</label>
+                            <select id="coaBalance">
+                                <option value="Debit">Debit</option>
+                                <option value="Kredit">Kredit</option>
+                            </select>
+
+                            <br><br>
+
+                            <button class="primary" onclick="saveCoa()">
+                                Save Account
+                            </button>
+
+                            <button class="secondary" onclick="hideCoaForm()">
+                                Cancel
+                            </button>
+
+                        </div>
+
+                    </section>
+                    <section class="page" id="page-admins">
+                        <div class="heading">
+                            <div>
+                                <h1>Data Admin</h1>
+                                <p class="sub">Menu untuk mengelola akun dari tabel <b>admins</b>.</p>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="empty">♙<br><b style="color:var(--ink)">Manajemen Admin</b>
+                                <p>Bagian ini disiapkan untuk pengelolaan akun admin FreshFold.</p>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="page" id="page-reports">
+                        <div class="heading">
+                            <div>
+                                <h1>Laporan Ringkas</h1>
+                                <p class="sub">Ringkasan transaksi dan pembayaran laundry.</p>
+                            </div><button class="secondary" onclick="exportCSV()">↓ Unduh CSV</button>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-top">Total Transaksi</div>
+                                <div class="stat-value" id="reportOrders">0</div>
+                                <div class="stat-note">Semua pesanan</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-top">Pendapatan Dibayar</div>
+                                <div class="stat-value" id="reportPaid">Rp0</div>
+                                <div class="stat-note">Pembayaran terkonfirmasi</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-top">Belum Dibayar</div>
+                                <div class="stat-value" id="reportUnpaid">Rp0</div>
+                                <div class="stat-note">Menunggu pembayaran</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-top">Berat Laundry</div>
+                                <div class="stat-value" id="reportWeight">0 kg</div>
+                                <div class="stat-note">Total pakaian tercatat</div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel-head">
+                                <div>
+                                    <h3 class="panel-title">Rincian Seluruh Pesanan</h3>
+                                    <div class="panel-sub">Data transaksi terkini dari database</div>
+                                </div>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>NO. PESANAN</th>
+                                            <th>PELANGGAN</th>
+                                            <th>TANGGAL MASUK</th>
+                                            <th>LAYANAN</th>
+                                            <th>BERAT</th>
+                                            <th>TOTAL</th>
+                                            <th>PEMBAYARAN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
             </div>
         </main>
     </div>
     <div class="toast" id="toast"></div>
 
     <script>
-        const rupiah = n => new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR', maximumFractionDigits: 0}).format(n);
+        const rupiah = n => new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0
+        }).format(n);
         const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        const today = new Date(), future = new Date(); 
-        future.setDate(future.getDate() + 2); 
+        const today = new Date(),
+            future = new Date();
+        future.setDate(future.getDate() + 2);
 
-        document.getElementById('todayDate').textContent = new Intl.DateTimeFormat('id-ID', {weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'}).format(today); 
-        document.getElementById('orderDate').value = iso(today); 
+        document.getElementById('todayDate').textContent = new Intl.DateTimeFormat('id-ID', {
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        }).format(today);
+        document.getElementById('orderDate').value = iso(today);
         document.getElementById('dueDate').value = iso(future);
 
         let orders = [];
@@ -1390,7 +1490,7 @@
             try {
                 let response = await fetch('api.php?action=get_data');
                 let data = await response.json();
-                
+
                 if (data.success) {
                     // 1. Set orders
                     orders = data.orders.map(o => ({
@@ -1424,8 +1524,8 @@
                     let svcTable = document.getElementById('serviceTable');
                     let svcSelect = document.getElementById('serviceType');
                     if (data.services) {
-                    if (svcTable) {
-                        svcTable.innerHTML = data.services.length ? data.services.map(s => `
+                        if (svcTable) {
+                            svcTable.innerHTML = data.services.length ? data.services.map(s => `
                             <tr>
                                 <td><b>#SRV-${String(s.id).padStart(3, '0')}</b></td>
                                 <td><div class="customer">${esc(s.service_name.trim())}</div></td>
@@ -1434,14 +1534,15 @@
                                 <td>${esc(s.description || '-')}</td>
                             </tr>
                         `).join('') : '<tr><td colspan="5" class="empty">Belum ada data layanan.</td></tr>';
-                    }
+                        }
 
-                    if (svcSelect) {
-                    let selected = svcSelect.value; // simpan pilihan supaya tidak reset saat reload
-                    svcSelect.innerHTML = data.services.length ? data.services.map(s =>
-                        `<option value="${s.id}" data-price="${Number(s.price_per_unit)}">${esc(s.service_name.trim())} — ${rupiah(Number(s.price_per_unit))}/${esc(s.unit)}</option>`
-                        ).join('') : '<option value="">Belum ada layanan</option>';
-                    if (selected) svcSelect.value = selected;}
+                        if (svcSelect) {
+                            let selected = svcSelect.value; // simpan pilihan supaya tidak reset saat reload
+                            svcSelect.innerHTML = data.services.length ? data.services.map(s =>
+                                `<option value="${s.id}" data-price="${Number(s.price_per_unit)}">${esc(s.service_name.trim())} — ${rupiah(Number(s.price_per_unit))}/${esc(s.unit)}</option>`
+                            ).join('') : '<option value="">Belum ada layanan</option>';
+                            if (selected) svcSelect.value = selected;
+                        }
                     }
                     // 3. Render elemen lainnya
                     renderDashboard();
@@ -1472,81 +1573,121 @@
                             if (selected) custSelect.value = selected;
                         }
                     }
-}
+                }
             } catch (err) {
                 console.error("Gagal memuat data dari database:", err);
             }
         }
 
-        const statuses = ['Menunggu Proses', 'Sedang Diproses', 'Selesai', 'Sudah Diambil']; 
-        const cls = s => ({'Menunggu Proses': 'wait', 'Sedang Diproses': 'process', 'Selesai': 'done', 'Sudah Diambil': 'taken'}[s] || 'wait'); 
-        const dateFmt = d => d ? new Intl.DateTimeFormat('id-ID', {day: '2-digit', month: 'short', year: 'numeric'}).format(new Date(d + 'T00:00:00')) : '-'; 
-        const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c])); 
-        const badge = s => `<span class="status ${cls(s)}">${esc(s)}</span>`; 
+        const statuses = ['Menunggu Proses', 'Sedang Diproses', 'Selesai', 'Sudah Diambil'];
+        const cls = s => ({
+            'Menunggu Proses': 'wait',
+            'Sedang Diproses': 'process',
+            'Selesai': 'done',
+            'Sudah Diambil': 'taken'
+        } [s] || 'wait');
+        const dateFmt = d => d ? new Intl.DateTimeFormat('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        }).format(new Date(d + 'T00:00:00')) : '-';
+        const esc = s => String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        } [c]));
+        const badge = s => `<span class="status ${cls(s)}">${esc(s)}</span>`;
         const payBadge = s => `<span class="status ${s === 'Lunas' ? 'done' : 'unpaid'}">${esc(s)}</span>`;
 
         function toast(msg) {
-            let el = document.getElementById('toast'); 
-            el.textContent = msg; 
-            el.classList.add('show'); 
-            clearTimeout(window.toastTimer); 
+            let el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(window.toastTimer);
             window.toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
         }
 
         function navigate(page) {
-            document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page)); 
-            document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page)); 
-            let labels = {dashboard: 'Dashboard', orders: 'Data Pesanan', 'new-order': 'Buat Pesanan', customers: 'Data Pelanggan', employees: 'Data Karyawan', services: 'Data Layanan', payments: 'Data Pembayaran', admins: 'Data Admin', tracking: 'Cek Status Laundry', reports: 'Laporan Ringkas'}; 
-            document.getElementById('breadcrumb').textContent = labels[page] || 'Dashboard'; 
-            document.getElementById('sidebar').classList.remove('open'); 
-            if (page === 'dashboard') renderDashboard(); 
-            if (page === 'orders') renderOrders(); 
-            if (page === 'reports') renderReports(); 
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        } 
+            document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
+            document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+            let labels = {
+                dashboard: 'Dashboard',
+                orders: 'Data Pesanan',
+                'new-order': 'Buat Pesanan',
+                customers: 'Data Pelanggan',
+                employees: 'Data Karyawan',
+                services: 'Data Layanan',
+                payments: 'Data Pembayaran',
+                coa: 'Chart of Accounts',
+                admins: 'Data Admin',
+                payments: 'Data Pembayaran',
+                tracking: 'Cek Status Laundry',
+                reports: 'Laporan Ringkas'
+            };
+            document.getElementById('breadcrumb').textContent = labels[page] || 'Dashboard';
+            document.getElementById('sidebar').classList.remove('open');
+            if (page === 'dashboard') renderDashboard();
+            if (page === 'orders') renderOrders();
+            if (page === 'reports') renderReports();
+            if (page === 'coa') {
+                loadCoa();
+            }
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
 
-        document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.addEventListener('click', () => navigate(b.dataset.page))); 
+        document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.addEventListener('click', () => navigate(b.dataset.page)));
         document.getElementById('mobileMenu').onclick = () => document.getElementById('sidebar').classList.toggle('open');
 
         function renderDashboard() {
-            document.getElementById('statTotal').textContent = orders.length; 
-            document.getElementById('statProcess').textContent = orders.filter(o => ['Menunggu Proses', 'Sedang Diproses'].includes(o.status)).length; 
-            document.getElementById('statReady').textContent = orders.filter(o => o.status === 'Selesai').length; 
-            document.getElementById('statRevenue').textContent = rupiah(orders.filter(o => o.payment === 'Lunas').reduce((s, o) => s + o.total, 0)); 
-            let recent = [...orders].reverse().slice(0, 5); 
-            document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o => `<tr><td><span class="order-id">${esc(o.id)}</span></td><td><div class="customer">${esc(o.name)}</div><div class="muted">${esc(o.phone)}</div></td><td>${esc(o.service)}</td><td>${rupiah(o.total)}</td><td>${badge(o.status)}</td></tr>`).join('') : '<tr><td colspan="5" class="empty">Belum ada pesanan.</td></tr>'; 
-            document.getElementById('statusSummary').innerHTML = statuses.map(s => {let count = orders.filter(o => o.status === s).length; return `<div class="progress-row"><span>${s}</span><span style="color:var(--muted)">${count} pesanan</span><div class="progress-bar"><div class="fill" style="width:${count / Math.max(1, orders.length) * 100}%"></div></div></div>`}).join('');
+            document.getElementById('statTotal').textContent = orders.length;
+            document.getElementById('statProcess').textContent = orders.filter(o => ['Menunggu Proses', 'Sedang Diproses'].includes(o.status)).length;
+            document.getElementById('statReady').textContent = orders.filter(o => o.status === 'Selesai').length;
+            document.getElementById('statRevenue').textContent = rupiah(orders.filter(o => o.payment === 'Lunas').reduce((s, o) => s + o.total, 0));
+            let recent = [...orders].reverse().slice(0, 5);
+            document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o => `<tr><td><span class="order-id">${esc(o.id)}</span></td><td><div class="customer">${esc(o.name)}</div><div class="muted">${esc(o.phone)}</div></td><td>${esc(o.service)}</td><td>${rupiah(o.total)}</td><td>${badge(o.status)}</td></tr>`).join('') : '<tr><td colspan="5" class="empty">Belum ada pesanan.</td></tr>';
+            document.getElementById('statusSummary').innerHTML = statuses.map(s => {
+                let count = orders.filter(o => o.status === s).length;
+                return `<div class="progress-row"><span>${s}</span><span style="color:var(--muted)">${count} pesanan</span><div class="progress-bar"><div class="fill" style="width:${count / Math.max(1, orders.length) * 100}%"></div></div></div>`
+            }).join('');
         }
 
         function renderOrders() {
-            let q = (document.getElementById('orderSearch').value || '').toLowerCase(), f = document.getElementById('statusFilter').value; 
-            let list = [...orders].reverse().filter(o => (o.id.toLowerCase().includes(q) || o.name.toLowerCase().includes(q) || o.phone.includes(q)) && (f === 'all' || o.status === f)); 
+            let q = (document.getElementById('orderSearch').value || '').toLowerCase(),
+                f = document.getElementById('statusFilter').value;
+            let list = [...orders].reverse().filter(o => (o.id.toLowerCase().includes(q) || o.name.toLowerCase().includes(q) || o.phone.includes(q)) && (f === 'all' || o.status === f));
             document.getElementById('allOrders').innerHTML = list.length ? list.map(o => `<tr><td><span class="order-id">${esc(o.id)}</span><div class="muted">${dateFmt(o.date)}</div></td><td><div class="customer">${esc(o.name)}</div><div class="muted">${esc(o.phone)}</div></td><td>${esc(o.service)}</td><td>${o.weight} kg</td><td><b>${rupiah(o.total)}</b></td><td>${badge(o.status)}</td><td>${payBadge(o.payment)}</td><td><button class="secondary" style="padding:7px 9px" onclick="toast('Menu kelola tersedia di versi full')">Kelola</button></td></tr>`).join('') : '<tr><td colspan="8" class="empty">Pesanan tidak ditemukan.</td></tr>';
-        } 
+        }
 
-        document.getElementById('orderSearch').addEventListener('input', renderOrders); 
+        document.getElementById('orderSearch').addEventListener('input', renderOrders);
         document.getElementById('statusFilter').addEventListener('change', renderOrders);
 
         function updatePrice() {
-            let s = document.getElementById('serviceType'), price = Number(s.options[s.selectedIndex].dataset.price || 0), w = Number(document.getElementById('weight').value || 0); 
-            document.getElementById('priceTotal').textContent = rupiah(Math.round(price * w)); 
+            let s = document.getElementById('serviceType'),
+                price = Number(s.options[s.selectedIndex].dataset.price || 0),
+                w = Number(document.getElementById('weight').value || 0);
+            document.getElementById('priceTotal').textContent = rupiah(Math.round(price * w));
             document.getElementById('priceDetail').textContent = `${rupiah(price)} × ${w || 0} kg`;
-        } 
+        }
 
-        document.getElementById('serviceType').addEventListener('change', updatePrice); 
+        document.getElementById('serviceType').addEventListener('change', updatePrice);
         document.getElementById('weight').addEventListener('input', updatePrice);
 
         document.getElementById('orderForm').addEventListener('submit', async e => {
-            e.preventDefault(); 
+            e.preventDefault();
             let formData = new URLSearchParams();
             formData.append('customer_id', document.getElementById('customerSelect').value);
-            
+
             let sel = document.getElementById('serviceType');
             formData.append('service_id', sel.value);
             formData.append('weight', document.getElementById('weight').value);
             formData.append('date', document.getElementById('orderDate').value);
             formData.append('due', document.getElementById('dueDate').value);
-            
+
             let price = Number(sel.options[sel.selectedIndex].dataset.price || 0);
             let weight = Number(document.getElementById('weight').value);
             formData.append('total', Math.round(price * weight));
@@ -1565,7 +1706,7 @@
                 } else {
                     toast('Gagal menyimpan: ' + result.message);
                 }
-            } catch(err) {
+            } catch (err) {
                 toast('Gagal terhubung ke server');
             }
         });
@@ -1576,7 +1717,10 @@
             formData.append('phone', document.getElementById('custPhone').value.trim());
 
             try {
-                let response = await fetch('api.php?action=add_customer', { method: 'POST', body: formData });
+                let response = await fetch('api.php?action=add_customer', {
+                    method: 'POST',
+                    body: formData
+                });
                 let result = await response.json();
                 if (result.success) {
                     toast(result.message);
@@ -1589,16 +1733,78 @@
                 toast('Gagal terhubung ke server');
             }
         });
+
         function renderReports() {
-            document.getElementById('reportOrders').textContent = orders.length; 
-            document.getElementById('reportPaid').textContent = rupiah(orders.filter(o => o.payment === 'Lunas').reduce((s, o) => s + o.total, 0)); 
-            document.getElementById('reportUnpaid').textContent = rupiah(orders.filter(o => o.payment !== 'Lunas').reduce((s, o) => s + o.total, 0)); 
-            document.getElementById('reportWeight').textContent = orders.reduce((s, o) => s + o.weight, 0).toLocaleString('id-ID') + ' kg'; 
+            document.getElementById('reportOrders').textContent = orders.length;
+            document.getElementById('reportPaid').textContent = rupiah(orders.filter(o => o.payment === 'Lunas').reduce((s, o) => s + o.total, 0));
+            document.getElementById('reportUnpaid').textContent = rupiah(orders.filter(o => o.payment !== 'Lunas').reduce((s, o) => s + o.total, 0));
+            document.getElementById('reportWeight').textContent = orders.reduce((s, o) => s + o.weight, 0).toLocaleString('id-ID') + ' kg';
             document.getElementById('reportTable').innerHTML = [...orders].reverse().map(o => `<tr><td><span class="order-id">${esc(o.id)}</span></td><td>${esc(o.name)}</td><td>${dateFmt(o.date)}</td><td>${esc(o.service)}</td><td>${o.weight} kg</td><td>${rupiah(o.total)}</td><td>${payBadge(o.payment)}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">Belum ada data transaksi.</td></tr>';
         }
 
         // LOAD DATA SAAT PERTAMA KALI HALAMAN DIBUKA
         loadDatabaseData();
+
+
+        async function loadCoa() {
+            try {
+                const response = await fetch('api.php?action=get_coa');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderCoa(data.coa);
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Gagal mengambil data COA');
+            }
+        }
+
+        function escapeCoa(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[char]);
+        }
+
+        function renderCoa(accounts) {
+            const table = document.getElementById('coaTable');
+
+            if (!table) {
+                console.error('Elemen coaTable tidak ditemukan');
+                return;
+            }
+
+            if (!accounts.length) {
+                table.innerHTML = `
+            <tr>
+                <td colspan="5">Belum ada akun COA</td>
+            </tr>`;
+                return;
+            }
+
+            table.innerHTML = accounts.map(account => `
+        <tr>
+            <td>${escapeCoa(account.kode_akun)}</td>
+            <td>${escapeCoa(account.nama_akun)}</td>
+            <td>${escapeCoa(account.kategori)}</td>
+            <td>${escapeCoa(account.saldo_normal)}</td>
+            <td>
+                <button onclick="editCoa(decodeURIComponent('${encodeURIComponent(account.kode_akun)}'))">
+                    Edit
+                </button>
+                <button onclick="deleteCoa(decodeURIComponent('${encodeURIComponent(account.kode_akun)}'))">
+                    Hapus
+                </button>
+            </td>
+        </tr>
+    `).join('');
+        }
     </script>
 </body>
 

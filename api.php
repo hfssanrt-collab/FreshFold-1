@@ -107,3 +107,23 @@ if ($action === 'add_customer' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
+if ($action === 'get_coa') {
+    try {
+        $stmt = $pdo->query("
+            SELECT * FROM coa
+            ORDER BY kode_akun ASC
+        ");
+
+        echo json_encode([
+            'success' => true,
+            'coa' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+        ]);
+
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+    exit;
+}
