@@ -995,6 +995,8 @@
         .btn-sm:hover { border-color: #b6d6c4 }
         .btn-sm.danger { color: var(--red) }
         .btn-sm.danger:hover { border-color: #e8c3bc; background: #fff7f5 }
+
+        .num { text-align: right !important }
     </style>
 </head>
 
@@ -1015,8 +1017,7 @@
                     data-page="new-order"><span>＋</span>Buat Pesanan</button><button class="nav-btn"
                     data-page="customers"><span>♙</span>Pelanggan</button><button class="nav-btn"
                     data-page="employees"><span>♧</span>Karyawan</button><button class="nav-btn"
-                    data-page="services"><span>✧</span>Layanan</button><button class="nav-btn"
-                    data-page="payments"><span>▣</span>Pembayaran</button>
+                    data-page="services"><span>✧</span>Layanan</button>
                 <button class="nav-btn" data-page="coa">
                     <span>▤</span>COA
                 </button>
@@ -1333,33 +1334,23 @@
                         </div>
                     </div>
                     </section>
-                    <section class="page" id="page-payments">
-                        <div class="heading">
-                            <div>
-                                <h1>Data Pembayaran</h1>
-                                <p class="sub">Menu untuk memantau data dari tabel <b>payments</b>.</p>
-                            </div>
-                        </div>
-                        <div class="panel">
-                            <div class="empty">▣<br><b style="color:var(--ink)">Menu Pembayaran</b>
-                                <p>Bagian ini disiapkan untuk melihat pembayaran dan mengelola status transaksi.</p>
-                            </div>
-                        </div>
-                    </section>
                     <section class="page" id="page-coa">
                         <div class="heading">
                             <div>
                                 <h1>Chart of Accounts</h1>
                                 <p class="sub">Kelola daftar akun keuangan FreshFold dari tabel <b>coa</b>.</p>
                             </div>
-                            <button class="primary" onclick="showCoaForm()">＋ Tambah Akun</button>
+                            <div style="display:flex;gap:9px;flex-wrap:wrap">
+                                <button class="secondary" onclick="cetakCoa()">🖨 Cetak COA</button>
+                                <button class="primary" onclick="showCoaForm()">＋ Tambah Akun</button>
+                            </div>
                         </div>
 
                         <div class="stats" id="coaStats">
                             <div class="stat"><div class="stat-top">Total Akun</div><div class="stat-value" id="coaTotal">0</div><div class="stat-note">Seluruh akun tercatat</div></div>
-                            <div class="stat"><div class="stat-top">Aset</div><div class="stat-value" id="coaAset">0</div><div class="stat-note">Saldo normal Debit</div></div>
-                            <div class="stat"><div class="stat-top">Kewajiban &amp; Ekuitas</div><div class="stat-value" id="coaKewEk">0</div><div class="stat-note">Saldo normal Kredit</div></div>
-                            <div class="stat"><div class="stat-top">Pendapatan &amp; Beban</div><div class="stat-value" id="coaPenBeb">0</div><div class="stat-note">Akun laba rugi</div></div>
+                            <div class="stat"><div class="stat-top">Total Nominal Debit</div><div class="stat-value" id="coaDebit">Rp0</div><div class="stat-note">Akun bersaldo normal Debit</div></div>
+                            <div class="stat"><div class="stat-top">Total Nominal Kredit</div><div class="stat-value" id="coaKredit">Rp0</div><div class="stat-note">Akun bersaldo normal Kredit</div></div>
+                            <div class="stat"><div class="stat-top">Selisih Debit - Kredit</div><div class="stat-value" id="coaSelisih">Rp0</div><div class="stat-note" id="coaSelisihNote">Debit dan Kredit seimbang</div></div>
                         </div>
 
                         <div class="panel form-panel" id="coaForm" style="display:none;margin-bottom:18px">
@@ -1391,6 +1382,10 @@
                                         <option value="Kredit">Kredit</option>
                                     </select>
                                 </div>
+                                <div class="form-group full">
+                                    <label for="coaNominal">Nominal (Rp)</label>
+                                    <input class="field" type="number" id="coaNominal" min="0" step="any" placeholder="Contoh: 5000000">
+                                </div>
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="secondary" onclick="hideCoaForm()">Batal</button>
@@ -1418,11 +1413,12 @@
                                             <th>NAMA AKUN</th>
                                             <th>KATEGORI</th>
                                             <th>SALDO NORMAL</th>
+                                            <th class="num">NOMINAL</th>
                                             <th>AKSI</th>
                                         </tr>
                                     </thead>
                                     <tbody id="coaTable">
-                                        <tr><td colspan="5" class="empty">Memuat data COA...</td></tr>
+                                        <tr><td colspan="6" class="empty">Memuat data COA...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -1498,6 +1494,45 @@
             </div>
         </main>
     </div>
+    <div class="modal-backdrop" id="manageModal">
+        <div class="modal">
+            <h3>Kelola Pesanan</h3>
+            <p id="manageInfo"></p>
+            <input type="hidden" id="manageId">
+            <div class="form-group" style="margin-top:14px">
+                <label for="manageStatus">Status laundry</label>
+                <select class="select" id="manageStatus">
+                    <option>Menunggu Proses</option>
+                    <option>Sedang Diproses</option>
+                    <option>Selesai</option>
+                    <option>Sudah Diambil</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-top:14px">
+                <label for="managePayment">Status pembayaran</label>
+                <select class="select" id="managePayment">
+                    <option>Belum Lunas</option>
+                    <option>Lunas</option>
+                </select>
+            </div>
+            <div class="modal-actions" style="flex-wrap:wrap">
+                <button type="button" class="secondary" onclick="sendReceiptFromManage()">💬 Kirim Struk</button>
+                <button type="button" class="secondary" onclick="closeManage()">Batal</button>
+                <button type="button" class="primary" id="manageSave" onclick="saveManage()">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop" id="receiptModal">
+        <div class="modal">
+            <h3>Pesanan Berhasil Dibuat ✅</h3>
+            <p>Kirim struk ke WhatsApp pelanggan?</p>
+            <div id="receiptPreview" style="background:#f2f8f4;border:1px solid #dfede3;border-radius:12px;padding:14px;font-size:12px;line-height:1.7;white-space:pre-wrap;margin-top:12px"></div>
+            <div class="modal-actions" style="flex-wrap:wrap">
+                <button type="button" class="secondary" onclick="closeReceipt()">Lewati</button>
+                <button type="button" class="primary" onclick="sendReceiptFromModal()">💬 Kirim ke WhatsApp</button>
+            </div>
+        </div>
+    </div>
     <div class="toast" id="toast"></div>
 
     <script>
@@ -1531,6 +1566,7 @@
                 if (data.success) {
                     // 1. Set orders
                     orders = data.orders.map(o => ({
+                        dbId: Number(o.id),
                         id: o.id_str,
                         name: o.name,
                         phone: o.phone,
@@ -1656,10 +1692,8 @@
                 customers: 'Data Pelanggan',
                 employees: 'Data Karyawan',
                 services: 'Data Layanan',
-                payments: 'Data Pembayaran',
                 coa: 'Chart of Accounts',
                 admins: 'Data Admin',
-                payments: 'Data Pembayaran',
                 tracking: 'Cek Status Laundry',
                 reports: 'Laporan Ringkas'
             };
@@ -1697,7 +1731,7 @@
             let q = (document.getElementById('orderSearch').value || '').toLowerCase(),
                 f = document.getElementById('statusFilter').value;
             let list = [...orders].reverse().filter(o => (o.id.toLowerCase().includes(q) || o.name.toLowerCase().includes(q) || o.phone.includes(q)) && (f === 'all' || o.status === f));
-            document.getElementById('allOrders').innerHTML = list.length ? list.map(o => `<tr><td><span class="order-id">${esc(o.id)}</span><div class="muted">${dateFmt(o.date)}</div></td><td><div class="customer">${esc(o.name)}</div><div class="muted">${esc(o.phone)}</div></td><td>${esc(o.service)}</td><td>${o.weight} kg</td><td><b>${rupiah(o.total)}</b></td><td>${badge(o.status)}</td><td>${payBadge(o.payment)}</td><td><button class="secondary" style="padding:7px 9px" onclick="toast('Menu kelola tersedia di versi full')">Kelola</button></td></tr>`).join('') : '<tr><td colspan="8" class="empty">Pesanan tidak ditemukan.</td></tr>';
+            document.getElementById('allOrders').innerHTML = list.length ? list.map(o => `<tr><td><span class="order-id">${esc(o.id)}</span><div class="muted">${dateFmt(o.date)}</div></td><td><div class="customer">${esc(o.name)}</div><div class="muted">${esc(o.phone)}</div></td><td>${esc(o.service)}</td><td>${o.weight} kg</td><td><b>${rupiah(o.total)}</b></td><td>${badge(o.status)}</td><td>${payBadge(o.payment)}</td><td><button class="secondary" style="padding:7px 9px" onclick="openManage(${o.dbId})">Kelola</button></td></tr>`).join('') : '<tr><td colspan="8" class="empty">Pesanan tidak ditemukan.</td></tr>';
         }
 
         document.getElementById('orderSearch').addEventListener('input', renderOrders);
@@ -1738,8 +1772,12 @@
                 if (result.success) {
                     toast(result.message);
                     e.target.reset();
+                    document.getElementById('orderDate').value = iso(today);
+                    document.getElementById('dueDate').value = iso(future);
                     await loadDatabaseData();
                     navigate('orders');
+                    const created = orders.find(o => o.id === result.order_code);
+                    if (created) openReceipt(created);
                 } else {
                     toast('Gagal menyimpan: ' + result.message);
                 }
@@ -1779,6 +1817,121 @@
             document.getElementById('reportTable').innerHTML = [...orders].reverse().map(o => `<tr><td><span class="order-id">${esc(o.id)}</span></td><td>${esc(o.name)}</td><td>${dateFmt(o.date)}</td><td>${esc(o.service)}</td><td>${o.weight} kg</td><td>${rupiah(o.total)}</td><td>${payBadge(o.payment)}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">Belum ada data transaksi.</td></tr>';
         }
 
+        // ====== STRUK WHATSAPP ======
+        function waNumber(phone) {
+            let d = String(phone || '').replace(/\D/g, '');
+            if (d.startsWith('0')) d = '62' + d.slice(1);
+            else if (d.startsWith('8')) d = '62' + d;
+            return d;
+        }
+
+        function receiptText(o) {
+            return [
+                '*STRUK LAUNDRY FRESHFOLD*',
+                '',
+                `No. Pesanan: ${o.id}`,
+                `Tanggal masuk: ${dateFmt(o.date)}`,
+                `Estimasi selesai: ${dateFmt(o.due)}`,
+                '------------------------',
+                `Pelanggan: ${o.name}`,
+                `Layanan: ${o.service}`,
+                `Berat: ${o.weight} kg`,
+                `Total: ${rupiah(o.total)}`,
+                `Pembayaran: ${o.payment}`,
+                '------------------------',
+                'Terima kasih telah mempercayakan laundry Anda kepada FreshFold 🧺'
+            ].join('\n');
+        }
+
+        function sendReceipt(o) {
+            const num = waNumber(o.phone);
+            if (num.length < 10) {
+                toast('Nomor HP pelanggan tidak valid');
+                return;
+            }
+            window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(receiptText(o)), '_blank');
+        }
+
+        let receiptOrder = null;
+
+        function openReceipt(o) {
+            receiptOrder = o;
+            document.getElementById('receiptPreview').textContent = receiptText(o).replace(/\*/g, '');
+            document.getElementById('receiptModal').classList.add('show');
+        }
+
+        function closeReceipt() {
+            document.getElementById('receiptModal').classList.remove('show');
+        }
+
+        function sendReceiptFromModal() {
+            if (receiptOrder) sendReceipt(receiptOrder);
+            closeReceipt();
+        }
+
+        function sendReceiptFromManage() {
+            const o = orders.find(x => x.dbId === Number(document.getElementById('manageId').value));
+            if (o) sendReceipt(o);
+        }
+
+        function openManage(id) {
+            const o = orders.find(x => x.dbId === Number(id));
+            if (!o) {
+                toast('Data pesanan tidak ditemukan');
+                return;
+            }
+            document.getElementById('manageId').value = o.dbId;
+            document.getElementById('manageInfo').textContent = `${o.id} • ${o.name} • ${o.service} • ${rupiah(o.total)}`;
+            document.getElementById('manageStatus').value = o.status;
+            document.getElementById('managePayment').value = o.payment === 'Lunas' ? 'Lunas' : 'Belum Lunas';
+            document.getElementById('manageModal').classList.add('show');
+        }
+
+        function closeManage() {
+            document.getElementById('manageModal').classList.remove('show');
+        }
+
+        async function saveManage() {
+            const btn = document.getElementById('manageSave');
+            const body = new URLSearchParams();
+            body.append('order_id', document.getElementById('manageId').value);
+            body.append('status', document.getElementById('manageStatus').value);
+            body.append('payment_status', document.getElementById('managePayment').value);
+
+            btn.disabled = true;
+            try {
+                const response = await fetch('api.php?action=update_order', {
+                    method: 'POST',
+                    body
+                });
+                const result = await response.json();
+                if (result.success) {
+                    toast(result.message);
+                    closeManage();
+                    await loadDatabaseData();
+                } else {
+                    toast('Gagal menyimpan: ' + result.message);
+                }
+            } catch (err) {
+                toast('Gagal terhubung ke server');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('manageModal').addEventListener('click', e => {
+            if (e.target.id === 'manageModal') closeManage();
+        });
+        document.getElementById('receiptModal').addEventListener('click', e => {
+            if (e.target.id === 'receiptModal') closeReceipt();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeManage();
+                closeReceipt();
+            }
+        });
+
         // LOAD DATA SAAT PERTAMA KALI HALAMAN DIBUKA
         loadDatabaseData();
 
@@ -1807,9 +1960,13 @@
             const f = document.getElementById('coaFilter').value;
 
             document.getElementById('coaTotal').textContent = coaData.length;
-            document.getElementById('coaAset').textContent = coaData.filter(a => a.kategori === 'Aset').length;
-            document.getElementById('coaKewEk').textContent = coaData.filter(a => ['Kewajiban', 'Ekuitas'].includes(a.kategori)).length;
-            document.getElementById('coaPenBeb').textContent = coaData.filter(a => ['Pendapatan', 'Beban'].includes(a.kategori)).length;
+            const totalDebit = coaData.filter(a => a.saldo_normal === 'Debit').reduce((t, a) => t + Number(a.nominal || 0), 0);
+            const totalKredit = coaData.filter(a => a.saldo_normal === 'Kredit').reduce((t, a) => t + Number(a.nominal || 0), 0);
+            const selisih = totalDebit - totalKredit;
+            document.getElementById('coaDebit').textContent = rupiah(totalDebit);
+            document.getElementById('coaKredit').textContent = rupiah(totalKredit);
+            document.getElementById('coaSelisih').textContent = rupiah(Math.abs(selisih));
+            document.getElementById('coaSelisihNote').textContent = selisih === 0 ? 'Debit dan Kredit seimbang' : (selisih > 0 ? 'Debit lebih besar dari Kredit' : 'Kredit lebih besar dari Debit');
 
             const list = coaData.filter(a =>
                 (String(a.kode_akun).toLowerCase().includes(q) || String(a.nama_akun).toLowerCase().includes(q)) &&
@@ -1822,11 +1979,92 @@
                     <td><div class="customer">${esc(a.nama_akun)}</div></td>
                     <td><span class="cat cat-${esc(a.kategori)}">${esc(a.kategori)}</span></td>
                     <td>${esc(a.saldo_normal)}</td>
+                    <td class="num"><b>${rupiah(Number(a.nominal || 0))}</b></td>
                     <td>
                         <button class="btn-sm" onclick="editCoa(decodeURIComponent('${encodeURIComponent(a.kode_akun)}'))">Edit</button>
                         <button class="btn-sm danger" onclick="deleteCoa(decodeURIComponent('${encodeURIComponent(a.kode_akun)}'))">Hapus</button>
                     </td>
-                </tr>`).join('') : '<tr><td colspan="5" class="empty">Akun tidak ditemukan.</td></tr>';
+                </tr>`).join('') : '<tr><td colspan="6" class="empty">Akun tidak ditemukan.</td></tr>';
+        }
+
+
+        function cetakCoa() {
+            const q = (document.getElementById('coaSearch').value || '').toLowerCase();
+            const f = document.getElementById('coaFilter').value;
+            const list = coaData.filter(a =>
+                (String(a.kode_akun).toLowerCase().includes(q) || String(a.nama_akun).toLowerCase().includes(q)) &&
+                (f === 'all' || a.kategori === f)
+            );
+
+            if (!list.length) {
+                toast('Tidak ada data COA untuk dicetak');
+                return;
+            }
+
+            const tgl = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+            const info = f === 'all' ? 'Semua kategori' : 'Kategori: ' + f;
+            const pDebit = list.filter(a => a.saldo_normal === 'Debit').reduce((t, a) => t + Number(a.nominal || 0), 0);
+            const pKredit = list.filter(a => a.saldo_normal === 'Kredit').reduce((t, a) => t + Number(a.nominal || 0), 0);
+            const rows = list.map((a, i) => `
+                <tr>
+                    <td class="c">${i + 1}</td>
+                    <td>${esc(a.kode_akun)}</td>
+                    <td>${esc(a.nama_akun)}</td>
+                    <td>${esc(a.kategori)}</td>
+                    <td>${esc(a.saldo_normal)}</td>
+                    <td class="r">${rupiah(Number(a.nominal || 0))}</td>
+                </tr>`).join('');
+
+            const html = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><title>Chart of Accounts - FreshFold</title>
+<style>
+    @page { size: A4; margin: 18mm 15mm }
+    * { box-sizing: border-box }
+    body { font-family: Arial, Helvetica, sans-serif; color: #20332b; font-size: 12px; margin: 0 }
+    .head { border-bottom: 2px solid #176b55; padding-bottom: 10px; margin-bottom: 16px }
+    .head h1 { margin: 0 0 4px; font-size: 20px; color: #176b55 }
+    .head h2 { margin: 0; font-size: 14px }
+    .meta { margin-top: 6px; color: #5d6b64; font-size: 11px }
+    table { width: 100%; border-collapse: collapse }
+    th { background: #e8f5ef; text-align: left; padding: 8px; border: 1px solid #c9d8cf; font-size: 11px }
+    td { padding: 7px 8px; border: 1px solid #dde6e0 }
+    td.c { text-align: center; width: 36px }
+    .r { text-align: right }
+    th.r { text-align: right }
+    .sum { width: 50%; margin: 14px 0 0 auto }
+    .sum td { font-weight: bold; background: #f5f8f5 }
+    tr { page-break-inside: avoid }
+    .foot { margin-top: 14px; font-size: 11px; color: #5d6b64 }
+</style></head><body>
+    <div class="head">
+        <h1>FreshFold</h1>
+        <h2>Chart of Accounts (COA)</h2>
+        <div class="meta">${esc(info)} &bull; Dicetak pada ${esc(tgl)}</div>
+    </div>
+    <table>
+        <thead><tr><th>No</th><th>Kode Akun</th><th>Nama Akun</th><th>Kategori</th><th>Saldo Normal</th><th class="r">Nominal</th></tr></thead>
+        <tbody>${rows}</tbody>
+    </table>
+    <table class="sum">
+        <tr><td>Total Nominal Debit</td><td class="r">${rupiah(pDebit)}</td></tr>
+        <tr><td>Total Nominal Kredit</td><td class="r">${rupiah(pKredit)}</td></tr>
+    </table>
+    <div class="foot">Total: ${list.length} akun</div>
+</body></html>`;
+
+            const frame = document.createElement('iframe');
+            frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+            document.body.appendChild(frame);
+            const doc = frame.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+
+            setTimeout(() => {
+                frame.contentWindow.focus();
+                frame.contentWindow.print();
+                setTimeout(() => frame.remove(), 1500);
+            }, 250);
         }
 
         document.getElementById('coaSearch').addEventListener('input', renderCoa);
@@ -1845,6 +2083,7 @@
             document.getElementById('coaName').value = account ? account.nama_akun : '';
             document.getElementById('coaCategory').value = account ? account.kategori : 'Aset';
             document.getElementById('coaBalance').value = account ? account.saldo_normal : 'Debit';
+            document.getElementById('coaNominal').value = account ? Number(account.nominal || 0) : '';
             document.getElementById('coaCode').focus();
             document.getElementById('coaForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -1874,6 +2113,12 @@
             body.append('nama_akun', name);
             body.append('kategori', document.getElementById('coaCategory').value);
             body.append('saldo_normal', document.getElementById('coaBalance').value);
+            const nominal = Number(document.getElementById('coaNominal').value || 0);
+            if (isNaN(nominal) || nominal < 0) {
+                toast('Nominal tidak boleh negatif');
+                return;
+            }
+            body.append('nominal', nominal);
             if (oldCode) body.append('old_kode_akun', oldCode);
 
             try {

@@ -82,7 +82,7 @@ if ($action === 'add_order' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtP->execute([$order_id]);
 
         $pdo->commit();
-        echo json_encode(['success' => true, 'message' => "Pesanan $order_code berhasil dibuat!"]);
+        echo json_encode(['success' => true, 'message' => "Pesanan $order_code berhasil dibuat!", 'order_code' => $order_code]);
     } catch (Exception $e) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
@@ -132,6 +132,7 @@ if ($action === 'add_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama  = trim($_POST['nama_akun'] ?? '');
     $kat   = $_POST['kategori'] ?? '';
     $saldo = $_POST['saldo_normal'] ?? '';
+    $nominal = $_POST['nominal'] ?? 0;
 
     if ($kode === '' || $nama === '') {
         echo json_encode(['success' => false, 'message' => 'Kode dan nama akun wajib diisi']);
@@ -140,6 +141,10 @@ if ($action === 'add_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!in_array($kat, ['Aset', 'Kewajiban', 'Ekuitas', 'Pendapatan', 'Beban'], true) ||
         !in_array($saldo, ['Debit', 'Kredit'], true)) {
         echo json_encode(['success' => false, 'message' => 'Kategori atau saldo normal tidak valid']);
+        exit;
+    }
+    if (!is_numeric($nominal) || $nominal < 0) {
+        echo json_encode(['success' => false, 'message' => 'Nominal harus berupa angka dan tidak boleh negatif']);
         exit;
     }
 
@@ -151,8 +156,8 @@ if ($action === 'add_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO coa (kode_akun, nama_akun, kategori, saldo_normal) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$kode, $nama, $kat, $saldo]);
+        $stmt = $pdo->prepare("INSERT INTO coa (kode_akun, nama_akun, kategori, saldo_normal, nominal) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$kode, $nama, $kat, $saldo, $nominal]);
         echo json_encode(['success' => true, 'message' => "Akun $kode berhasil ditambahkan!"]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
@@ -166,6 +171,7 @@ if ($action === 'update_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama  = trim($_POST['nama_akun'] ?? '');
     $kat   = $_POST['kategori'] ?? '';
     $saldo = $_POST['saldo_normal'] ?? '';
+    $nominal = $_POST['nominal'] ?? 0;
 
     if ($old === '' || $kode === '' || $nama === '') {
         echo json_encode(['success' => false, 'message' => 'Kode dan nama akun wajib diisi']);
@@ -174,6 +180,10 @@ if ($action === 'update_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!in_array($kat, ['Aset', 'Kewajiban', 'Ekuitas', 'Pendapatan', 'Beban'], true) ||
         !in_array($saldo, ['Debit', 'Kredit'], true)) {
         echo json_encode(['success' => false, 'message' => 'Kategori atau saldo normal tidak valid']);
+        exit;
+    }
+    if (!is_numeric($nominal) || $nominal < 0) {
+        echo json_encode(['success' => false, 'message' => 'Nominal harus berupa angka dan tidak boleh negatif']);
         exit;
     }
 
@@ -188,8 +198,8 @@ if ($action === 'update_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        $stmt = $pdo->prepare("UPDATE coa SET kode_akun = ?, nama_akun = ?, kategori = ?, saldo_normal = ? WHERE kode_akun = ?");
-        $stmt->execute([$kode, $nama, $kat, $saldo, $old]);
+        $stmt = $pdo->prepare("UPDATE coa SET kode_akun = ?, nama_akun = ?, kategori = ?, saldo_normal = ?, nominal = ? WHERE kode_akun = ?");
+        $stmt->execute([$kode, $nama, $kat, $saldo, $nominal, $old]);
         echo json_encode(['success' => true, 'message' => "Akun $kode berhasil diperbarui!"]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
@@ -211,6 +221,59 @@ if ($action === 'delete_coa' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['success' => true, 'message' => "Akun $kode berhasil dihapus!"]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Akun tidak bisa dihapus: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'update_order' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $order_id = (int)($_POST['order_id'] ?? 0);
+    $status   = $_POST['status'] ?? '';
+    $pay      = $_POST['payment_status'] ?? '';
+
+    if ($order_id <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Pesanan tidak valid']);
+        exit;
+    }
+    if (!in_array($status, ['Menunggu Proses', 'Sedang Diproses', 'Selesai', 'Sudah Diambil'], true) ||
+        !in_array($pay, ['Belum Lunas', 'Lunas'], true)) {
+        echo json_encode(['success' => false, 'message' => 'Status tidak valid']);
+        exit;
+    }
+
+    try {
+        $pdo->beginTransaction();
+
+        $stmtT = $pdo->prepare("SELECT order_code, total_price FROM orders WHERE id = ?");
+        $stmtT->execute([$order_id]);
+        $order = $stmtT->fetch(PDO::FETCH_ASSOC);
+        if (!$order) {
+            $pdo->rollBack();
+            echo json_encode(['success' => false, 'message' => 'Pesanan tidak ditemukan']);
+            exit;
+        }
+
+        $stmtO = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
+        $stmtO->execute([$status, $order_id]);
+
+        $amount = $pay === 'Lunas' ? $order['total_price'] : 0;
+
+        $cek = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE order_id = ?");
+        $cek->execute([$order_id]);
+        if ($cek->fetchColumn() > 0) {
+            $stmtP = $pdo->prepare("UPDATE payments SET amount_paid = ?, payment_status = ? WHERE order_id = ?");
+            $stmtP->execute([$amount, $pay, $order_id]);
+        } else {
+            $stmtP = $pdo->prepare("INSERT INTO payments (order_id, amount_paid, payment_status) VALUES (?, ?, ?)");
+            $stmtP->execute([$order_id, $amount, $pay]);
+        }
+
+        $pdo->commit();
+        echo json_encode(['success' => true, 'message' => "Pesanan {$order['order_code']} berhasil diperbarui!"]);
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
     exit;
 }
